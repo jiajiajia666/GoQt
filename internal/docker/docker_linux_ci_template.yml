@@ -1,0 +1,29 @@
+jobs:
+  -
+    job: '${{ parameters.name }}'
+    timeoutInMinutes: 0
+    pool:
+      vmImage: '${{ parameters.image }}'
+    variables:
+      CI: true
+      GO111MODULE: off
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      -
+        script: sudo apt-get -qq update && sudo apt-get --no-install-recommends -qq -y install build-essential libglib2.0-dev libglu1-mesa-dev libpulse-dev fcitx-frontend-qt5
+      -
+        script: 'go get -v github.com/jiajiajia666/GoQt/cmd/... && $(go env GOPATH)/bin/qtsetup'
+  -
+    job: '${{ parameters.name }}_module'
+    timeoutInMinutes: 0
+    pool:
+      vmImage: '${{ parameters.image }}'
+    variables:
+      CI: true
+      GO111MODULE: on
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      -
+        script: sudo apt-get -qq update && sudo apt-get --no-install-recommends -qq -y install build-essential libglib2.0-dev libglu1-mesa-dev libpulse-dev fcitx-frontend-qt5
+      -
+        script: 'mkdir -p $(go env GOPATH)/src && cd $(go env GOPATH)/src && git clone https://github.com/jiajiajia666/examples.git && cd ./examples && go install -v -tags=no_env github.com/jiajiajia666/GoQt/cmd/... && go mod vendor && git clone https://github.com/jiajiajia666/env_linux_amd64_513.git vendor/github.com/jiajiajia666/env_linux_amd64_513 && $(go env GOPATH)/bin/qtsetup && $(go env GOPATH)/bin/qtdeploy test desktop ./basic/widgets'

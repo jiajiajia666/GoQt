@@ -1,0 +1,14 @@
+jobs:
+  -
+    job: '${{ parameters.tag }}'
+    timeoutInMinutes: 0
+    pool:
+      vmImage: ubuntu-latest
+    dependsOn: '${{ parameters.dep }}'
+    steps:
+      -
+        script: 'sudo df -h; sudo rm -rf /usr/share/dotnet; sudo df -h;'
+      -
+        script: 'docker build --force-rm -f internal/docker/${{ parameters.file }} -t jiajiajia666/GoQt:${{ parameters.tag }} .'
+      -
+        script: 'docker login -u jiajiajia666 -p $(DOCKER_PASSWORD) && docker push jiajiajia666/GoQt:${{ parameters.tag }} && docker logout'
